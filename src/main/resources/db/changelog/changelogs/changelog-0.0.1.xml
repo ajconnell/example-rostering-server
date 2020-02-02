@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create regions table" author="Andy Connell">
+        <createTable tableName="regions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create areas table" author="Andy Connell">
+        <createTable tableName="areas">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create regional_areas table" author="Andy Connell">
+        <createTable tableName="regional_areas">
+            <column name="region_id" type="BIGINT">
+                <constraints foreignKeyName="fk_regionalareas_region_id" nullable="false"/>
+            </column>
+            <column name="area_id" type="BIGINT">
+                <constraints foreignKeyName="fk_regionalareas_area_id" nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="region_id"
+                                 baseTableName="regional_areas"
+                                 constraintName="fk_regionalareas_region_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="regions"/>
+        <addForeignKeyConstraint baseColumnNames="area_id"
+                                 baseTableName="regional_areas"
+                                 constraintName="fk_regionalareas_area_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="areas"/>
+    </changeSet>
+
+    <changeSet id="create roles table" author="Andy Connell">
+        <createTable tableName="roles">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create qualifications table" author="Andy Connell">
+        <createTable tableName="qualifications">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="definition" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create profile_pictures table" author="Andy Connell">
+        <createTable tableName="profile_pictures">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="s3_key" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create employees table" author="Andy Connell">
+        <createTable tableName="employees">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="area_id" type="BIGINT">
+                <constraints foreignKeyName="fk_employee_area_id" nullable="false"/>
+            </column>
+            <column name="profile_picture_id" type="BIGINT">
+                <constraints foreignKeyName="fk_employee_profile_picture_id" nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints foreignKeyName="fk_employee_role_id" nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="area_id"
+                                 baseTableName="employees"
+                                 constraintName="fk_employee_area_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="areas"/>
+        <addForeignKeyConstraint baseColumnNames="profile_picture_id"
+                                 baseTableName="employees"
+                                 constraintName="fk_employee_profile_picture_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="profile_pictures"/>
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="employees"
+                                 constraintName="fk_employee_role_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="roles"/>
+    </changeSet>
+
+    <changeSet id="create role_qualifications table" author="Andy Connell">
+        <createTable tableName="role_qualifications">
+            <column name="role_id" type="BIGINT">
+                <constraints foreignKeyName="fk_rolequalifications_role_id" nullable="false"/>
+            </column>
+            <column name="qualification_id" type="BIGINT">
+                <constraints foreignKeyName="fk_rolequalifications_qualification_id" nullable="false"/>
+            </column>
+            <column name="mandatory" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="role_qualifications"
+                                 constraintName="fk_rolequalifications_role_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="roles"/>
+        <addForeignKeyConstraint baseColumnNames="qualification_id"
+                                 baseTableName="role_qualifications"
+                                 constraintName="fk_rolequalifications_qualification_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="qualifications"/>
+    </changeSet>
+
+    <changeSet id="create employee_qualifications table" author="Andy Connell">
+        <createTable tableName="employee_qualifications">
+            <column name="employee_id" type="BIGINT">
+                <constraints foreignKeyName="fk_employeequalifications_employee_id" nullable="false"/>
+            </column>
+            <column name="qualification_id" type="BIGINT">
+                <constraints foreignKeyName="fk_employeequalifications_qualification_id" nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)" defaultValue="INACTIVE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="employee_id"
+                                 baseTableName="employee_qualifications"
+                                 constraintName="fk_employeequalifications_employee_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="employees"/>
+        <addForeignKeyConstraint baseColumnNames="qualification_id"
+                                 baseTableName="employee_qualifications"
+                                 constraintName="fk_employeequalifications_qualification_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="qualifications"/>
+    </changeSet>
+
+    <changeSet id="create employee_roles table" author="Andy Connell">
+        <createTable tableName="employee_roles">
+            <column name="employee_id" type="BIGINT">
+                <constraints foreignKeyName="fk_employeeroles_employee_id" nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints foreignKeyName="fk_employeeroles_role_id" nullable="false"/>
+            </column>
+            <column name="proficiency" type="varchar(50)" defaultValue="TRAINING">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="employee_id"
+                                 baseTableName="employee_roles"
+                                 constraintName="fk_employeeroles_employee_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="employees"/>
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="employee_roles"
+                                 constraintName="fk_employeeroles_role_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="roles"/>
+    </changeSet>
+
+    <changeSet id="create roster_allowances table" author="Andy Connell">
+        <createTable tableName="roster_allowances">
+            <column name="employee_id" type="BIGINT">
+                <constraints foreignKeyName="fk_rosterallowances_employee_id" nullable="false" unique="true"/>
+            </column>
+            <column name="allowance" type="DECIMAL(3,1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="employee_id"
+                                 baseTableName="roster_allowances"
+                                 constraintName="fk_rosterallowances_employee_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="employees"/>
+    </changeSet>
+
+    <changeSet id="create shifts table" author="Andy Connell">
+        <createTable tableName="shifts">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="area_id" type="BIGINT">
+                <constraints foreignKeyName="fk_shifts_area_id" nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints foreignKeyName="fk_shifts_role_id" nullable="false"/>
+            </column>
+            <column name="employee_id" type="BIGINT">
+                <constraints foreignKeyName="fk_shifts_employee_id" nullable="true"/>
+            </column>
+            <column name="start_time" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_time" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notified" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="confirmed" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="break_detail" type="VARCHAR(50)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="area_id"
+                                 baseTableName="shifts"
+                                 constraintName="fk_shifts_area_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="areas"/>
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="shifts"
+                                 constraintName="fk_shifts_role_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="roles"/>
+        <addForeignKeyConstraint baseColumnNames="employee_id"
+                                 baseTableName="shifts"
+                                 constraintName="fk_shifts_employee_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="employees"/>
+    </changeSet>
+
+    <changeSet id="create leave table" author="Andy Connell">
+        <createTable tableName="leave">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="employee_id" type="BIGINT">
+                <constraints foreignKeyName="fk_leave_employee_id" nullable="false"/>
+            </column>
+            <column name="start_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="employee_id"
+                                 baseTableName="leave"
+                                 constraintName="fk_leave_employee_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="employees"/>
+    </changeSet>
+
+
+</databaseChangeLog>
