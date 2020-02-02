@@ -31,7 +31,6 @@ public class Shift extends RosterEntity {
     @ManyToOne
     private Role role;
 
-    @NotNull
     @Column(name = "employee_id")
     private Long employeeId;
 
